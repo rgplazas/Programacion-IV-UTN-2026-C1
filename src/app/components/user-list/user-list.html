@@ -1,28 +1,54 @@
 <div>
+    <!-- La interpolacion {{ }} muestra el valor de una propiedad del componente en la vista -->
     <span class="tagline">{{ subtitle }}</span>
     <div class="stats">
-        <span class="user-count">Usuarios: {{ totalCount() }}</span>
+        <!-- totalCount() = total de usuarios sin importar el filtro activo         -->
+        <!-- filteredCount() = cuantos usuarios coinciden con el filtro seleccionado -->
+        <!-- Separar estos dos contadores permite informar al usuario con precision   -->
+        <span class="user-count">Total: {{ totalCount() }} | Mostrando: {{ filteredCount() }}</span>
     </div>
 </div>
-<div>
-    @for (user of filterUsers(); track user.id) {
-    <app-user-card 
-        [user] = "user"
-        (onToggleStatus) = "toggleUserStatus($event)"
-        (onDelete) = "deleteUser($event)"
-        >
-    </app-user-card>
-    <p>{{ user.nombre }}</p>
-    <p>{{ user.apellido }}</p>
-    <p>{{ user.email }}</p>
-    <p>{{ user.isActive }}</p>
-    <hr>
-    }
-    @empty {
-    <p>No hay usuarios para mostrar</p>
-    }
 
-     <button (click)="setFilter('all')">Todos</button>
-     <button (click)="setFilter('active')">Activos</button>
-     <button (click)="setFilter('inactive')">Inactivos</button>
+<!-- @if es la sintaxis moderna de Angular 17+ para condicionales en templates.     -->
+<!-- Reemplaza al antiguo *ngIf. Solo renderiza el elemento si la condicion es true -->
+<!-- Mientras la peticion HTTP esta en curso, loading() vale true                   -->
+@if (loading()) {
+    <p>Cargando usuarios...</p>
+}
+<!-- Si el servicio guardó un mensaje de error, lo mostramos aqui -->
+@if (error()) {
+    <p class="error">{{ error() }}</p>
+}
+
+<div>
+    <!-- (click) es un event binding: escucha el evento click del boton          -->
+    <!-- y llama al metodo del componente pasando el filtro como argumento       -->
+    <!-- El componente a su vez llama al servicio, que actualiza la señal filter -->
+    <!-- Al cambiar filter(), el computed filterUsers() se recalcula solo        -->
+    <button (click)="setFilter('all')">Todos</button>
+    <button (click)="setFilter('active')">Activos</button>
+    <button (click)="setFilter('inactive')">Inactivos</button>
+</div>
+
+<div>
+    <!-- @for es la sintaxis moderna de Angular 17+ para iterar listas.              -->
+    <!-- Reemplaza al antiguo *ngFor. 'track user.id' le indica a Angular como       -->
+    <!-- identificar cada elemento para optimizar los re-renders: si el id no cambia -->
+    <!-- Angular no destruye y recrea el elemento, solo actualiza lo que cambio.     -->
+    @for (user of filterUsers(); track user.id) {
+        <!-- [user]="user" es property binding: le pasamos el objeto user al input     -->
+        <!-- del componente hijo. Los corchetes [] indican que es una expresion        -->
+        <!-- evaluada, no un string literal.                                           -->
+        <!-- (onToggleStatus) y (onDelete) son event bindings: escuchan los outputs   -->
+        <!-- del componente hijo. $event contiene el valor emitido (el id del usuario) -->
+        <app-user-card
+            [user]="user"
+            (onToggleStatus)="toggleUserStatus($event)"
+            (onDelete)="deleteUser($event)"
+        ></app-user-card>
+    }
+    <!-- @empty se ejecuta automaticamente cuando el @for no tiene elementos -->
+    @empty {
+        <p>No hay usuarios para mostrar</p>
+    }
 </div>

@@ -1,1 +1,39 @@
-<p>user-card works!</p>
+<!-- Este template es la vista del componente UserCard.                            -->
+<!-- Recibe los datos a traves del input 'user' definido en el .ts                 -->
+<!-- y los muestra usando interpolacion {{ }} y property binding [].               -->
+<div class="user-card">
+
+  <!-- [src] y [alt] son property bindings: el valor entre comillas es una         -->
+  <!-- expresion TypeScript evaluada, no un string fijo.                           -->
+  <!-- user() se llama como funcion porque es una Signal (API moderna Angular 17+) -->
+  <div class="user-card__avatar">
+    <img [src]="user().avatar" [alt]="user().nombre" width="60" height="60" />
+  </div>
+
+  <div class="user-card__info">
+    <!-- Interpolacion: {{ }} convierte cualquier expresion a texto en la vista -->
+    <h3 class="user-card__name">{{ user().nombre }} {{ user().apellido }}</h3>
+    <p class="user-card__email">{{ user().email }}</p>
+
+    <!-- [class.active] es un class binding: agrega la clase CSS 'active'       -->
+    <!-- solo cuando user().isActive es verdadero.                               -->
+    <span class="user-card__status" [class.active]="user().isActive">
+      <!-- Operador ternario en el template: condicion ? valor_si_true : valor_si_false -->
+      {{ user().isActive ? 'Activo' : 'Inactivo' }}
+    </span>
+
+    <!-- toLocaleDateString() es un metodo nativo de JavaScript para formatear fechas. -->
+    <!-- 'es-AR' indica que use el formato de fecha de Argentina (dd/mm/aaaa).         -->
+    <p class="user-card__date">Alta: {{ user().createdAt.toLocaleDateString('es-AR') }}</p>
+  </div>
+
+  <div class="user-card__actions">
+    <!-- Al hacer click, el componente emite un evento hacia el padre con el id    -->
+    <!-- El padre (UserList) recibe ese evento y decide que hacer con el servicio  -->
+    <!-- El texto del boton cambia segun el estado actual del usuario              -->
+    <button (click)="toggleStatus()">
+      {{ user().isActive ? 'Desactivar' : 'Activar' }}
+    </button>
+    <button (click)="deleteUser()">Eliminar</button>
+  </div>
+</div>
