@@ -1,14 +1,53 @@
-import { Injectable, signal, computed } from '@angular/core';
+import { Injectable, signal, computed, inject, effect } from '@angular/core';
 import { User, MOCK_USERS, UserFilter } from '../models/user.model';
+import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root',
 })
 
 export class UserService {
-  private users = signal<User[]>(MOCK_USERS);
+
+  private http = inject(HttpClient);
+  private apiUrl = 'https://jsonplaceholder.typicode.com/users';
+  
+  //private users = signal<User[]>(MOCK_USERS);
   private filter = signal<UserFilter>('all');
-   
+
+  users   = signal<User[]>([]);
+  loading = signal(false);
+  error   = signal<string | null>(null);
+ 
+  /*constructor(){
+    effect(() => {
+      this.loadUser();
+    });
+  }*/
+
+  loadUser():void{
+    this.loading.set(true);
+    this.error.set(null);
+
+    this.http.get<any[]>(this.apiUrl).subscribe({
+      next: (data) => {
+        const transformed = data.map(apiUser => ({
+          id:apiUser.id,
+          nombre:apiUser.username,
+          apellido:apiUser.name,
+          email:apiUser.email,
+          avatar:'https://via.placeholder.com/150',
+          isActive: true,
+          createdAt: new Date()
+        }));
+        this.users.set(transformed);
+        this.loading.set(false)
+      },
+      error: (err) => {
+        this.error.set("error al cargar usuario");
+        this.loading.set(false);
+      } 
+    });
+  }
 
   addUser(user: Omit<User, 'id' | 'createdAt'>): void{
       const newUser: User = {
@@ -35,7 +74,7 @@ export class UserService {
     }
   }
 
-    filterUsers = computed (() => {
+    filterUsers = computed (() => { 
     const currentFilter = this.filter();
     const allUsers = this.users();
 
