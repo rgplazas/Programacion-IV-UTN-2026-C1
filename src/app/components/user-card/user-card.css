@@ -1,0 +1,49 @@
+/* uh-card: personaliza la card de Bootstrap con sombra y transicion suave al pasar el mouse */
+.uh-card {
+  border: 1px solid var(--uh-border);
+  border-radius: var(--uh-radius);
+  box-shadow: var(--uh-shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+/* Efecto hover: la card se eleva levemente al pasar el mouse */
+.uh-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(26, 58, 92, 0.14);
+}
+
+/* Header de la card: fondo blanco con borde inferior sutil */
+.uh-card__header {
+  background-color: var(--uh-surface);
+  border-bottom: 1px solid var(--uh-border);
+  padding: 0.85rem 1rem;
+}
+
+/* Footer de la card: fondo gris muy claro */
+.uh-card__footer {
+  background-color: #f8fafc;
+  border-top: 1px solid var(--uh-border);
+  padding: 0.6rem 1rem;
+}
+
+/* Avatar circular con las iniciales del usuario.
+   Se muestra en color primario institucional cuando el usuario esta activo. */
+.uh-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background-color: var(--uh-primary);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  letter-spacing: 0.05em;
+}
+
+/* Cuando el usuario esta inactivo, el avatar se muestra en gris */
+.uh-avatar--inactive {
+  background-color: #94a3b8;
+}

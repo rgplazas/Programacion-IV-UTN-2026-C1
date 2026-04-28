@@ -1,39 +1,78 @@
-<!-- Este template es la vista del componente UserCard.                            -->
-<!-- Recibe los datos a traves del input 'user' definido en el .ts                 -->
-<!-- y los muestra usando interpolacion {{ }} y property binding [].               -->
-<div class="user-card">
+<!-- card de Bootstrap: contenedor con borde, sombra y padding              -->
+<!-- h-100: altura 100% para que todas las cards de la fila sean iguales   -->
+<!-- uh-card: clase propia para personalizacion adicional                   -->
+<div class="card h-100 uh-card">
 
-  <!-- [src] y [alt] son property bindings: el valor entre comillas es una         -->
-  <!-- expresion TypeScript evaluada, no un string fijo.                           -->
-  <!-- user() se llama como funcion porque es una Signal (API moderna Angular 17+) -->
-  <div class="user-card__avatar">
-    <img [src]="user().avatar" [alt]="user().nombre" width="60" height="60" />
+  <!-- Encabezado de la card con avatar e indicador de estado -->
+  <div class="card-header uh-card__header d-flex align-items-center gap-3">
+
+    <!-- Avatar circular con las iniciales del usuario                       -->
+    <!-- user() se llama como funcion porque es una Signal de Angular 17+    -->
+    <!-- getInitials() es un metodo del componente .ts que devuelve 2 letras -->
+    <div class="uh-avatar" [class.uh-avatar--inactive]="!user().isActive">
+      {{ getInitials() }}
+    </div>
+
+    <div class="flex-grow-1 overflow-hidden">
+      <!-- Interpolacion {{ }}: muestra nombre y apellido del usuario -->
+      <h6 class="mb-0 fw-semibold text-truncate">
+        {{ user().nombre }} {{ user().apellido }}
+      </h6>
+      <!-- Badge de Bootstrap: etiqueta de estado visual -->
+      <!-- [class binding]: aplica 'bg-success' o 'bg-danger' segun isActive -->
+      <span
+        class="badge mt-1"
+        [class.bg-success]="user().isActive"
+        [class.bg-danger]="!user().isActive"
+      >
+        <!-- Operador ternario: condicion ? valor_verdadero : valor_falso -->
+        <i class="bi" [class.bi-check-circle]="user().isActive" [class.bi-x-circle]="!user().isActive"></i>
+        {{ user().isActive ? ' Activo' : ' Inactivo' }}
+      </span>
+    </div>
+
   </div>
 
-  <div class="user-card__info">
-    <!-- Interpolacion: {{ }} convierte cualquier expresion a texto en la vista -->
-    <h3 class="user-card__name">{{ user().nombre }} {{ user().apellido }}</h3>
-    <p class="user-card__email">{{ user().email }}</p>
+  <!-- Cuerpo de la card con los datos del usuario -->
+  <div class="card-body">
 
-    <!-- [class.active] es un class binding: agrega la clase CSS 'active'       -->
-    <!-- solo cuando user().isActive es verdadero.                               -->
-    <span class="user-card__status" [class.active]="user().isActive">
-      <!-- Operador ternario en el template: condicion ? valor_si_true : valor_si_false -->
-      {{ user().isActive ? 'Activo' : 'Inactivo' }}
-    </span>
+    <!-- d-flex + gap: fila con icono y texto alineados -->
+    <div class="d-flex align-items-center gap-2 mb-2 text-muted small">
+      <i class="bi bi-envelope-fill text-primary"></i>
+      <!-- text-truncate: corta el texto con "..." si es muy largo -->
+      <span class="text-truncate">{{ user().email }}</span>
+    </div>
 
-    <!-- toLocaleDateString() es un metodo nativo de JavaScript para formatear fechas. -->
-    <!-- 'es-AR' indica que use el formato de fecha de Argentina (dd/mm/aaaa).         -->
-    <p class="user-card__date">Alta: {{ user().createdAt.toLocaleDateString('es-AR') }}</p>
+    <div class="d-flex align-items-center gap-2 text-muted small">
+      <i class="bi bi-calendar3 text-primary"></i>
+      <!-- toLocaleDateString() formatea la fecha en formato argentino sin necesitar pipes -->
+      <span>Alta: {{ user().createdAt.toLocaleDateString('es-AR') }}</span>
+    </div>
+
   </div>
 
-  <div class="user-card__actions">
-    <!-- Al hacer click, el componente emite un evento hacia el padre con el id    -->
-    <!-- El padre (UserList) recibe ese evento y decide que hacer con el servicio  -->
-    <!-- El texto del boton cambia segun el estado actual del usuario              -->
-    <button (click)="toggleStatus()">
+  <!-- Pie de la card con los botones de accion -->
+  <div class="card-footer uh-card__footer d-flex gap-2">
+
+    <!-- btn-sm: boton pequeño. btn-outline-*: estilo con borde sin relleno      -->
+    <!-- (click): event binding — al hacer click llama al metodo del componente  -->
+    <!-- El componente NO modifica el estado directamente: emite el id al padre  -->
+    <button
+      class="btn btn-sm flex-grow-1"
+      [class.btn-outline-danger]="user().isActive"
+      [class.btn-outline-success]="!user().isActive"
+      (click)="toggleStatus()"
+    >
+      <i class="bi me-1"
+        [class.bi-toggle-on]="user().isActive"
+        [class.bi-toggle-off]="!user().isActive"
+      ></i>
       {{ user().isActive ? 'Desactivar' : 'Activar' }}
     </button>
-    <button (click)="deleteUser()">Eliminar</button>
+
+    <button class="btn btn-sm btn-outline-secondary" (click)="deleteUser()">
+      <i class="bi bi-trash3"></i>
+    </button>
+
   </div>
 </div>

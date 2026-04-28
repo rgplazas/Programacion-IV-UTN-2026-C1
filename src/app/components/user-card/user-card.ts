@@ -25,6 +25,15 @@ export class UserCard {
   onToggleStatus = output<number>();
   onDelete = output<number>();
 
+  // getInitials(): metodo de presentacion pura — toma la primera letra del nombre
+  // y la primera del apellido y las devuelve en mayusculas para mostrar en el avatar.
+  // Es logica de VISTA, por eso vive en el componente y no en el servicio.
+  getInitials(): string {
+    const n = this.user().nombre?.charAt(0) ?? '';
+    const a = this.user().apellido?.charAt(0) ?? '';
+    return (n + a).toUpperCase();
+  }
+
   // Este metodo es llamado desde el template cuando el usuario hace click en el boton.
   // El componente NO modifica el estado directamente: emite el id hacia arriba
   // y es el padre (UserList) quien decide que hacer con esa informacion.

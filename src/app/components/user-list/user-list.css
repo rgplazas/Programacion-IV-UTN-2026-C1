@@ -1,0 +1,15 @@
+/* Titulo de seccion con borde izquierdo de color institucional */
+.uh-section-title {
+  font-size: 1.4rem;
+  font-weight: 600;
+  color: var(--uh-primary);
+  border-left: 4px solid var(--uh-accent);
+  padding-left: 0.75rem;
+}
+
+/* Estado vacio: area que se muestra cuando no hay usuarios */
+.uh-empty {
+  background-color: var(--uh-surface);
+  border: 2px dashed var(--uh-border);
+  border-radius: var(--uh-radius);
+}

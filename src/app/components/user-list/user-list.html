@@ -1,54 +1,79 @@
-<div>
+<!-- ===== ENCABEZADO DE SECCION ===== -->
+<div class="d-flex align-items-center justify-content-between mb-4">
+  <div>
     <!-- La interpolacion {{ }} muestra el valor de una propiedad del componente en la vista -->
-    <span class="tagline">{{ subtitle }}</span>
-    <div class="stats">
-        <!-- totalCount() = total de usuarios sin importar el filtro activo         -->
-        <!-- filteredCount() = cuantos usuarios coinciden con el filtro seleccionado -->
-        <!-- Separar estos dos contadores permite informar al usuario con precision   -->
-        <span class="user-count">Total: {{ totalCount() }} | Mostrando: {{ filteredCount() }}</span>
-    </div>
+    <h2 class="uh-section-title mb-0">
+      <i class="bi bi-person-lines-fill me-2"></i>{{ subtitle }}
+    </h2>
+    <p class="text-muted small mb-0 mt-1">
+      <!-- totalCount() = total real | filteredCount() = segun filtro activo -->
+      Total registrados: <strong>{{ totalCount() }}</strong>
+      &nbsp;|&nbsp;
+      Mostrando: <strong>{{ filteredCount() }}</strong>
+    </p>
+  </div>
 </div>
 
-<!-- @if es la sintaxis moderna de Angular 17+ para condicionales en templates.     -->
-<!-- Reemplaza al antiguo *ngIf. Solo renderiza el elemento si la condicion es true -->
-<!-- Mientras la peticion HTTP esta en curso, loading() vale true                   -->
+<!-- ===== ALERTA DE CARGA ===== -->
+<!-- @if es la sintaxis moderna Angular 17+ que reemplaza *ngIf -->
 @if (loading()) {
-    <p>Cargando usuarios...</p>
-}
-<!-- Si el servicio guardó un mensaje de error, lo mostramos aqui -->
-@if (error()) {
-    <p class="error">{{ error() }}</p>
+  <div class="alert alert-info d-flex align-items-center gap-2" role="alert">
+    <div class="spinner-border spinner-border-sm" role="status"></div>
+    <span>Cargando usuarios desde la API...</span>
+  </div>
 }
 
-<div>
-    <!-- (click) es un event binding: escucha el evento click del boton          -->
-    <!-- y llama al metodo del componente pasando el filtro como argumento       -->
-    <!-- El componente a su vez llama al servicio, que actualiza la señal filter -->
-    <!-- Al cambiar filter(), el computed filterUsers() se recalcula solo        -->
-    <button (click)="setFilter('all')">Todos</button>
-    <button (click)="setFilter('active')">Activos</button>
-    <button (click)="setFilter('inactive')">Inactivos</button>
+<!-- @if para errores: solo se renderiza si la señal error() tiene un valor -->
+@if (error()) {
+  <div class="alert alert-danger d-flex align-items-center gap-2" role="alert">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>{{ error() }}</span>
+  </div>
+}
+
+<!-- ===== BARRA DE FILTROS ===== -->
+<!-- btn-group de Bootstrap: agrupa botones visualmente como una unidad -->
+<!-- (click) es event binding: llama al metodo del componente al hacer click -->
+<!-- Al cambiar el filtro, el computed filterUsers() se recalcula automaticamente -->
+<div class="d-flex align-items-center gap-3 mb-4">
+  <span class="text-muted small fw-medium">Filtrar por:</span>
+  <div class="btn-group" role="group">
+    <button class="btn btn-sm btn-outline-primary" (click)="setFilter('all')">
+      <i class="bi bi-list-ul me-1"></i>Todos
+    </button>
+    <button class="btn btn-sm btn-outline-success" (click)="setFilter('active')">
+      <i class="bi bi-check-circle me-1"></i>Activos
+    </button>
+    <button class="btn btn-sm btn-outline-danger" (click)="setFilter('inactive')">
+      <i class="bi bi-x-circle me-1"></i>Inactivos
+    </button>
+  </div>
 </div>
 
-<div>
-    <!-- @for es la sintaxis moderna de Angular 17+ para iterar listas.              -->
-    <!-- Reemplaza al antiguo *ngFor. 'track user.id' le indica a Angular como       -->
-    <!-- identificar cada elemento para optimizar los re-renders: si el id no cambia -->
-    <!-- Angular no destruye y recrea el elemento, solo actualiza lo que cambio.     -->
-    @for (user of filterUsers(); track user.id) {
-        <!-- [user]="user" es property binding: le pasamos el objeto user al input     -->
-        <!-- del componente hijo. Los corchetes [] indican que es una expresion        -->
-        <!-- evaluada, no un string literal.                                           -->
-        <!-- (onToggleStatus) y (onDelete) son event bindings: escuchan los outputs   -->
-        <!-- del componente hijo. $event contiene el valor emitido (el id del usuario) -->
-        <app-user-card
-            [user]="user"
-            (onToggleStatus)="toggleUserStatus($event)"
-            (onDelete)="deleteUser($event)"
-        ></app-user-card>
-    }
-    <!-- @empty se ejecuta automaticamente cuando el @for no tiene elementos -->
-    @empty {
-        <p>No hay usuarios para mostrar</p>
-    }
+<!-- ===== GRILLA DE USUARIOS ===== -->
+<!-- row + col forman el sistema de grilla de 12 columnas de Bootstrap   -->
+<!-- col-sm-6 col-lg-4: 1 col en mobile, 2 en tablet, 3 en desktop      -->
+<!-- @for: itera la lista filtrada. track user.id optimiza el re-render  -->
+<div class="row g-3">
+  @for (user of filterUsers(); track user.id) {
+    <div class="col-sm-6 col-lg-4">
+      <!-- [user]: property binding — pasa el objeto al input del componente hijo  -->
+      <!-- (onToggleStatus) y (onDelete): event bindings — escuchan outputs del hijo -->
+      <!-- $event contiene el valor emitido por el hijo (el id del usuario)         -->
+      <app-user-card
+        [user]="user"
+        (onToggleStatus)="toggleUserStatus($event)"
+        (onDelete)="deleteUser($event)"
+      ></app-user-card>
+    </div>
+  }
+  <!-- @empty: bloque que se muestra cuando el @for no tiene elementos -->
+  @empty {
+    <div class="col-12">
+      <div class="uh-empty text-center py-5">
+        <i class="bi bi-person-x display-4 text-muted"></i>
+        <p class="text-muted mt-3">No hay usuarios para mostrar con el filtro seleccionado.</p>
+      </div>
+    </div>
+  }
 </div>
