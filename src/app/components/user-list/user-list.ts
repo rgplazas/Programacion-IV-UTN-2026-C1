@@ -7,6 +7,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { UserCard } from '../user-card/user-card';
 import { UserService } from '../../service/user';
 import { User } from '../../models/user.model';
+import { Router } from '@angular/router';
 
 
 @Component({
@@ -29,6 +30,7 @@ export class UserList implements OnInit {
   // Como el servicio es Singleton, todos los componentes que lo inyecten
   // acceden al MISMO estado compartido.
   private userService = inject(UserService);
+  private router = inject(Router);
 
   subtitle = 'Gestión de usuarios';
 
@@ -69,5 +71,9 @@ export class UserList implements OnInit {
 
   setFilter(newFilter: string): void {
     this.userService.setFilter(newFilter);
+  }
+
+  goToDetail(userId: number): void {
+    this.router.navigate(['/users', userId]);
   }
 }
