@@ -1,0 +1,28 @@
+<form (ngSubmit)="onSubmit()" #loginForm="ngForm">
+
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-control"
+            [(ngModel)] = "email" name="email"
+            required email
+            #emailField = "ngModel">
+        @if (emailField.invalid && emailField.touched){
+            <div class="text-danger small"> Correo Invalido</div>
+        }
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-control"
+            [(ngModel)] = "password" name="password"
+            required minlength="6"
+            #passField = "ngModel">
+        @if (passField.invalid && passField.touched){
+            <div class="text-danger small"> Minimo 6 Caracteres</div>
+        }
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="loginForm.invalid">
+        Ingresar
+    </button>
+</form>
